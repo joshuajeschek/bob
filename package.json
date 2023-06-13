@@ -1,0 +1,45 @@
+{
+	"$schema": "https://json.schemastore.org/package.json",
+	"name": "bob",
+	"version": "1.0.0",
+	"main": "dist/index.js",
+	"repository": "https://www.github.com/joshuajeschek/bob",
+	"author": "Joshua Jeschek",
+	"license": "MIT",
+	"dependencies": {
+		"@prisma/client": "4.15.0",
+		"@sapphire/decorators": "^6.0.1",
+		"@sapphire/framework": "^4.4.4",
+		"@sapphire/plugin-api": "^5.0.4",
+		"@sapphire/plugin-logger": "^3.0.4",
+		"colorette": "^2.0.20",
+		"discord.js": "^14.11.0",
+		"dotenv-cra": "^3.0.3"
+	},
+	"devDependencies": {
+		"@sapphire/prettier-config": "^1.4.5",
+		"@sapphire/ts-config": "^4.0.0",
+		"@types/node": "^20.3.1",
+		"dotenv-cli": "^7.2.1",
+		"eslint": "^8.42.0",
+		"husky": "^8.0.0",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^2.8.8",
+		"pretty-quick": "^3.1.3",
+		"prisma": "^4.15.0",
+		"ts-node": "^10.9.1",
+		"tsc-watch": "^6.0.4",
+		"typescript": "^5.1.3"
+	},
+	"scripts": {
+		"build": "tsc --build .",
+		"dev": "tsc-watch --noClear --onSuccess \"node ./dist/index.js\"",
+		"start": "NODE_ENV=production node dist/index.js",
+		"format": "prettier --write .",
+		"check-format": "prettier --check .",
+		"tunnel": "cloudflared access tcp --hostname postgres.jeschek.eu --url localhost:5432",
+		"prisma": "yarn prisma:dev",
+		"prisma:dev": "dotenv -e .env.development -- npx prisma",
+		"prepare": "husky install"
+	}
+}

@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  discordId String   @id @unique @map("discord_id")
+  battleTag String   @map("battle_tag")
+  platform  Platform
+  region    Region
+}
+
+enum Platform {
+  pc
+  xbl
+  psn
+}
+
+enum Region {
+  us
+  eu
+  kr
+  cn
+  global
+}
