@@ -61,7 +61,7 @@ export class DisconnectCommand extends Command {
 
 	private async getButtonAction(message: Message): Promise<'disconnect' | 'cancel'> {
 		return new Promise((resolve) => {
-			const collector = message.createMessageComponentCollector({ time: Time.Second * 10 });
+			const collector = message.createMessageComponentCollector({ time: Time.Minute * 5 });
 			collector.on('collect', (buttonPress) => {
 				buttonPress.deferUpdate();
 				resolve(buttonPress.customId as 'disconnect' | 'cancel');

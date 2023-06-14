@@ -109,7 +109,7 @@ export class ConnectCommand extends Command {
 
 	private async getButtonAction(message: Message): Promise<'reconnect' | 'disconnect' | 'cancel'> {
 		return new Promise((resolve) => {
-			const collector = message.createMessageComponentCollector({ time: Time.Second * 10 });
+			const collector = message.createMessageComponentCollector({ time: Time.Minute * 5 });
 			collector.on('collect', (buttonPress) => {
 				buttonPress.deferUpdate();
 				resolve(buttonPress.customId as 'reconnect' | 'disconnect' | 'cancel');
