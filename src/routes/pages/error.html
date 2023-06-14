@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Connection Error :/</title>
+		<style>
+			body {
+				background: #1a1a1a;
+				color: #ffffff;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				margin: 0;
+				font-family: sans-serif;
+			}
+			main {
+				text-align: center;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+			.heading {
+				font-size: 2rem;
+			}
+			.avatar {
+				border: 1px solid #ffffff99;
+				border-radius: 50%;
+				height: 10rem;
+				width: 10rem;
+				object-fit: cover;
+				margin: 0.5rem 0;
+			}
+			a {
+				color: #148eff;
+			}
+		</style>
+	</head>
+	<body>
+		<main class="error">
+			<img src="/favicon.ico" alt="avatar of the discord bot" class="avatar" />
+			<h1 class="heading">An error occured :/</h1>
+			<p>{{errorInformation}}</p>
+			<p>Please start the authentication on Discord using the <code>/connect</code> command</p>
+			<p>If the error persists, please contact <a href="mailto:dev@jeschek.eu">dev@jeschek.eu</a></p>
+		</main>
+	</body>
+</html>

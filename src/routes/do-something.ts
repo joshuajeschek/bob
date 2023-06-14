@@ -1,4 +1,5 @@
-import { methods, Route, type ApiRequest, type ApiResponse } from '@sapphire/plugin-api';
+import { methods, Route } from '@sapphire/plugin-api';
+import type { ApiRequest, ApiResponse } from '@sapphire/plugin-api';
 
 export class DoSomethingRoute extends Route {
 	public constructor(context: Route.Context, options: Route.Options) {
@@ -9,10 +10,10 @@ export class DoSomethingRoute extends Route {
 	}
 
 	public [methods.GET](_request: ApiRequest, response: ApiResponse) {
-		response.json({ did: 'something' });
+		return response.json({ did: 'something' });
 	}
 
 	public [methods.POST](_request: ApiRequest, response: ApiResponse) {
-		response.json({ did: 'something' });
+		return response.json({ did: 'something' });
 	}
 }

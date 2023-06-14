@@ -8,10 +8,11 @@ datasource db {
 }
 
 model User {
-  discordId String   @id @unique @map("discord_id")
-  battleTag String   @map("battle_tag")
-  platform  Platform
-  region    Region
+  id           String    @id @unique
+  battleTag    String?   @map("battle_tag")
+  platform     Platform?
+  region       Region?
+  connectToken String?   @unique
 }
 
 enum Platform {

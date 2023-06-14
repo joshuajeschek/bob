@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Connection Successful</title>
+		<style>
+			body {
+				background: #1a1a1a;
+				color: #ffffff;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				margin: 0;
+				font-family: sans-serif;
+			}
+			main {
+				text-align: center;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+			.profiles {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				margin: 1rem;
+			}
+			.profile {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				margin: 0 1rem;
+			}
+			.avatar {
+				border: 1px solid #ffffff99;
+				border-radius: 50%;
+				height: 10rem;
+				width: 10rem;
+				object-fit: cover;
+				margin: 0.5rem 0;
+			}
+			.notice {
+				opacity: 0.8;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<img src="/favicon.ico" alt="avatar of the discord bot" class="avatar" />
+			<h1>Connection Successful</h1>
+			<div class="profiles">
+				<div class="profile">
+					<img src="{{discordAvatarURL}}" alt="discord profile picture of {{username}}" class="avatar" />
+					<b>{{username}}</b>
+				</div>
+				<span>connected to</span>
+				<div class="profile">
+					<img src="{{overwatchAvatarURL}}" alt="battlenet profile picture of {{battleTag}}" class="avatar" />
+					<b>{{battleTag}}</b>
+				</div>
+			</div>
+			<span class="notice">You can now close this tab and return to Discord.</span>
+		</main>
+	</body>
+</html>

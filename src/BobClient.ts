@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { SapphireClient, container, type SapphireClientOptions } from '@sapphire/framework';
+import { SapphireClient, container } from '@sapphire/framework';
+import { GatewayIntentBits, ActivityType } from 'discord.js';
+import type { SapphireClientOptions } from '@sapphire/framework';
 import type { ServerOptions } from '@sapphire/plugin-api';
-import { GatewayIntentBits, type ClientOptions, ActivityType } from 'discord.js';
+import type { ClientOptions } from 'discord.js';
 
-const OPTIONS: SapphireClientOptions & ServerOptions & ClientOptions = {
+const SAPPHIRE_OPTIONS: SapphireClientOptions & ServerOptions & ClientOptions = {
 	intents: [GatewayIntentBits.Guilds],
 	listenOptions: {
 		port: parseInt(process.env.PORT || '4000') ?? 4000
@@ -15,11 +17,19 @@ const OPTIONS: SapphireClientOptions & ServerOptions & ClientOptions = {
 
 export class BobClient extends SapphireClient {
 	public constructor() {
-		super(OPTIONS);
+		super(SAPPHIRE_OPTIONS);
 	}
 	public override async login(token?: string) {
-		const prisma = new PrismaClient();
-		container.db = prisma;
+		container.db = new PrismaClient();
+		// reset all connectTokens on startup
+		if (process.env.NODE_ENV === 'production') {
+			container.db.user.updateMany({
+				data: {
+					connectToken: null
+				}
+			});
+		}
+
 		return super.login(token);
 	}
 	public override destroy() {
