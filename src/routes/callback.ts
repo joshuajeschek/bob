@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { HttpCodes, methods, Route } from '@sapphire/plugin-api';
 import { getAccessToken, getUserInfo } from '../lib/battlenet';
-import { getProfile } from '../lib/overwatch';
+import { getPlayerSummary } from '../lib/overfast';
 import type { ApiRequest, ApiResponse } from '@sapphire/plugin-api';
 
 export class BattlenetRoute extends Route {
@@ -65,7 +65,7 @@ export class BattlenetRoute extends Route {
 		}
 
 		const discordUser = await this.container.client.users.fetch(user.id);
-		const overwatchProfile = await getProfile(battletag, 'pc', 'us');
+		const summary = await getPlayerSummary(battletag);
 
 		return response.html(
 			HttpCodes.OK,
@@ -73,7 +73,7 @@ export class BattlenetRoute extends Route {
 				.replaceAll('{{battleTag}}', battletag)
 				.replaceAll('{{username}}', discordUser.username)
 				.replaceAll('{{discordAvatarURL}}', discordUser.displayAvatarURL())
-				.replaceAll('{{overwatchAvatarURL}}', overwatchProfile.portrait)
+				.replaceAll('{{overwatchAvatarURL}}', summary.avatar || 'https://http.cat/404.png')
 		);
 	}
 }

@@ -5,7 +5,7 @@ import { Time } from '@sapphire/time-utilities';
 import { EmbedBuilder } from '@discordjs/builders';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message, bold, time } from 'discord.js';
 import { sleep } from '@sapphire/utilities';
-import { getProfile } from '../lib/overwatch';
+import { getPlayerSummary } from '../lib/overfast';
 
 @ApplyOptions<Command.Options>({
 	name: 'connect',
@@ -16,9 +16,9 @@ export class ConnectCommand extends Command {
 		await interaction.deferReply({ ephemeral: true });
 		const user = await this.container.db.user.findFirst({ where: { id: interaction.user.id } });
 		if (user?.battleTag) {
-			const profile = await getProfile(user.battleTag);
+			const summary = await getPlayerSummary(user.battleTag);
 			const embed = new EmbedBuilder() //
-				.setThumbnail(profile.portrait)
+				.setThumbnail(summary.avatar || null)
 				.setDescription(
 					`Your Discord account is already connected to ${bold(
 						user.battleTag
@@ -97,9 +97,9 @@ export class ConnectCommand extends Command {
 			return true;
 		}
 		if (user.battleTag) {
-			const profile = await getProfile(user.battleTag);
+			const summary = await getPlayerSummary(user.battleTag);
 			embed.setFields({ name: 'Connection Success', value: `Your Discord account is connected to ${bold(user.battleTag)} on Battle.net` });
-			embed.setThumbnail(profile.portrait);
+			embed.setThumbnail(summary.avatar || null);
 			interaction.editReply({ embeds: [embed], components: [] });
 
 			return true;

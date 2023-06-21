@@ -3,7 +3,7 @@ import { SapphireClient, container } from '@sapphire/framework';
 import { GatewayIntentBits, ActivityType } from 'discord.js';
 import type { SapphireClientOptions } from '@sapphire/framework';
 import type { ServerOptions } from '@sapphire/plugin-api';
-import type { ClientOptions } from 'discord.js';
+import type { ClientOptions, TextChannel } from 'discord.js';
 
 const SAPPHIRE_OPTIONS: SapphireClientOptions & ServerOptions & ClientOptions = {
 	intents: [GatewayIntentBits.Guilds],
@@ -21,6 +21,12 @@ export class BobClient extends SapphireClient {
 	}
 	public override async login(token?: string) {
 		container.db = new PrismaClient();
+		const returnToken = await super.login(token);
+		const imageChannel = await this.channels.fetch(process.env.IMAGE_CHANNEL_ID);
+		if (!imageChannel || !imageChannel.isTextBased) {
+			throw new Error('Image channel not found or is not text based.');
+		}
+		container.imageChannel = imageChannel as TextChannel;
 		// reset all connectTokens on startup
 		if (process.env.NODE_ENV === 'production') {
 			container.db.user.updateMany({
@@ -29,8 +35,7 @@ export class BobClient extends SapphireClient {
 				}
 			});
 		}
-
-		return super.login(token);
+		return returnToken;
 	}
 	public override destroy() {
 		container.db.$disconnect();
@@ -42,5 +47,6 @@ export class BobClient extends SapphireClient {
 declare module '@sapphire/pieces' {
 	interface Container {
 		db: PrismaClient;
+		imageChannel: TextChannel;
 	}
 }

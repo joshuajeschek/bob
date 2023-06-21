@@ -6,6 +6,7 @@ declare namespace NodeJS {
 		readonly BATTLENET_ID: string;
 		readonly BATTLENET_SECRET: string;
 		readonly BASE_URL: string;
+		readonly IMAGE_CHANNEL_ID: string;
 		readonly PORT?: string;
 	}
 }

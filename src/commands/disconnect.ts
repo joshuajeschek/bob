@@ -3,7 +3,7 @@ import { Command } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { EmbedBuilder } from '@discordjs/builders';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message, bold, inlineCode } from 'discord.js';
-import { getProfile } from '../lib/overwatch';
+import { getPlayerSummary } from '../lib/overfast';
 
 @ApplyOptions<Command.Options>({
 	name: 'disconnect',
@@ -18,9 +18,9 @@ export class DisconnectCommand extends Command {
 				`Your Discord account is not connected to a Battle.net account.\n\nYou can connect your accounts using the ${inlineCode('/connect')} command.`
 			);
 		}
-		const profile = await getProfile(user.battleTag);
+		const summary = await getPlayerSummary(user.battleTag);
 		const embed = new EmbedBuilder() //
-			.setThumbnail(profile.portrait)
+			.setThumbnail(summary.avatar || null)
 			.setDescription(
 				`Your Discord account is connected to ${bold(user.battleTag)} on Battle.net.\n\nWould you like to connect disconnect your account?`
 			);
