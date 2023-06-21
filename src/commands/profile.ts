@@ -56,11 +56,12 @@ export class ProfileCommand extends Command {
 			footer.text = `took ${stopwatch}`;
 			embed.setFooter(footer);
 
-			return interaction.editReply({ embeds: [embed] });
+			throw new Error('test');
+			// return interaction.editReply({ embeds: [embed] });
 		} catch (error) {
 			this.container.logger.error(`Error occured on command 'profile': ${error}`);
-			const embed = await embeds.error();
-			return interaction.editReply({ embeds: [embed] });
+			const [embed, component] = embeds.error();
+			return interaction.editReply({ embeds: [embed], components: [component] });
 		}
 	}
 

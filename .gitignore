@@ -3,3 +3,4 @@ dist/
 .env.*
 !.env.template
 tsconfig.tsbuildinfo
+*.tmp
