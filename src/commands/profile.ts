@@ -1,8 +1,8 @@
+import messages from '../lib/messages';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
 import { inlineCode } from 'discord.js';
 import { getPlayerSummary } from '../lib/overfast';
-import embeds from '../lib/embeds';
 import { Stopwatch } from '@sapphire/stopwatch';
 import type { EmbedFooterOptions } from '@discordjs/builders';
 import type { ResponseError } from '../lib/overfast/api';
@@ -39,7 +39,7 @@ export class ProfileCommand extends Command {
 
 			const profile = await getPlayerSummary(battleTag).catch(async (error: ResponseError) => {
 				this.container.logger.error(`Error occured on command 'profile': ${error.response.statusText}`);
-				const embed = await embeds.apiError(error);
+				const embed = await messages.apiError(error);
 				await interaction.editReply({ embeds: [embed] });
 			});
 
@@ -51,16 +51,15 @@ export class ProfileCommand extends Command {
 				});
 			}
 
-			const embed = await embeds.profile(profile, platform);
+			const embed = await messages.profile(profile, platform);
 
 			footer.text = `took ${stopwatch}`;
 			embed.setFooter(footer);
 
-			throw new Error('test');
-			// return interaction.editReply({ embeds: [embed] });
+			return interaction.editReply({ embeds: [embed] });
 		} catch (error) {
 			this.container.logger.error(`Error occured on command 'profile': ${error}`);
-			const [embed, component] = embeds.error();
+			const [embed, component] = messages.error();
 			return interaction.editReply({ embeds: [embed], components: [component] });
 		}
 	}

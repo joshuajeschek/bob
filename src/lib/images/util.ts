@@ -10,7 +10,7 @@ export async function getURL(buffer: Buffer) {
 	return message.attachments.first()!.url;
 }
 
-export function blackenImage(image: Buffer) {
+function blackenImage(image: Buffer) {
 	for (let i = 0; i < image.length; i += 4) {
 		const ALPHA = i + 3;
 		const RED = i;
