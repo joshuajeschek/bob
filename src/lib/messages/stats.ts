@@ -1,13 +1,18 @@
-import { EmbedBuilder, bold } from 'discord.js';
+import images from '../images';
 import { capitalizeFirstLetter } from '../util';
 import { getAccentColor } from './util';
+import { EmbedBuilder, bold } from 'discord.js';
 import { DurationFormatter, Time } from '@sapphire/time-utilities';
 import type { APIEmbedField } from 'discord.js';
-import type { CareerStats, PlayerSummary, SummaryCompetitiveRoleRank, SummaryCompetitiveRoleRankFull } from '../overfast';
-import type { HeroCareerStats, Hero } from '../overfast';
-import images from '../images';
+import type { CareerStats, PlayerSummary, SummaryCompetitive, SummaryCompetitiveRoleRank, SummaryCompetitiveRoleRankFull } from '../overfast';
+import type { HeroCareerStats, Hero, CareerStatCategory, PlayerGamemode } from '../overfast';
 
-const CATEGORY_ORDER = ['game', 'assists', 'average', 'combat', 'hero_specific'];
+type CustomCareerStatCategory = CareerStatCategory | 'basic';
+interface CustomHeroCareerStats extends Omit<HeroCareerStats, 'category'> {
+	category: CustomCareerStatCategory;
+}
+
+const CATEGORY_ORDER: CustomCareerStatCategory[] = ['hero_specific', 'game', 'assists', 'average', 'combat'];
 const MINUTE_STATS = ['time_played', 'objective_time'];
 const SECONDS_STATS = ['time_spent_on_fire_avg_per_10_min', 'objective_time_avg_per_10_min'];
 
@@ -30,18 +35,18 @@ export function getStatsFields(stats: HeroCareerStats[]): APIEmbedField[] {
 		...(stats.find((category) => category.category === 'game')?.stats || []),
 		...(stats.find((category) => category.category === 'assists')?.stats || [])
 	];
-	const basicStats = { category: 'game', label: 'Game', stats: basicStatsStats } as HeroCareerStats;
-	const detailedStats =
-		stats //
+	const basicStats = { category: 'game', label: 'Game', stats: basicStatsStats } as CustomHeroCareerStats;
+	const filteredStats =
+		[...stats, basicStats] //
 			.filter((category) => !['best', 'game', 'assists'].includes(category.category))
 			.sort((a, b) => CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category)) || [];
 	return (
-		[basicStats, ...detailedStats].map((category: HeroCareerStats) => {
+		filteredStats.map((category: CustomHeroCareerStats) => {
 			const categoryStats = category.stats.map((stat) => `${stat.label}: ${bold(formatStatValue(stat.key, stat.value as number))}`).join('\n');
 			return {
 				name: category.label,
 				value: categoryStats,
-				inline: true
+				inline: category.category !== 'hero_specific'
 			};
 		}) || []
 	);
@@ -50,8 +55,8 @@ export function getStatsFields(stats: HeroCareerStats[]): APIEmbedField[] {
 export default async function (
 	summary: PlayerSummary,
 	stats: CareerStats,
-	gamemode: 'quickplay' | 'competitive',
-	platform: 'pc' | 'console',
+	gamemode: PlayerGamemode,
+	platform: keyof SummaryCompetitive,
 	hero?: Hero | Promise<Hero>
 ) {
 	const image = images.ranks(summary, platform);
@@ -67,7 +72,7 @@ export default async function (
 	const fields = Object.values(stats).filter(Boolean).flatMap(getStatsFields).filter(Boolean);
 	const intro =
 		`Statistics for ${bold(capitalizeFirstLetter(gamemode))}` +
-		(hero && ` and ${bold((await hero).name)}`) +
+		(hero ? ` and ${bold((await hero).name)}` : '') +
 		(fields.length > 0 ? ':' : ' not found.');
 
 	return new EmbedBuilder() //

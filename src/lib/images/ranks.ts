@@ -1,7 +1,6 @@
 import sharp from 'sharp';
 import type { PlayerSummary, SummaryCompetitivePlatform, SummaryCompetitiveRoleRank, SummaryCompetitiveRoleRankFull } from '../overfast';
 import { getImage, getImageWithShadow, getURL } from './util';
-import memoizee from 'memoizee';
 
 const BADGE_SIZE = 200;
 const ROLE_ICON_SIZE = 150;
@@ -9,8 +8,7 @@ const RANK_ICON_SIZE = 180;
 const CARD_WIDTH = 1273;
 const CARD_HEIGHT = 255;
 
-export default memoizee(ranks, { promise: true });
-async function ranks(summary: PlayerSummary, platform: 'pc' | 'console') {
+export default async function (summary: PlayerSummary, platform: 'pc' | 'console') {
 	let namecard;
 	if (summary?.namecard) {
 		namecard = getImage(summary.namecard);

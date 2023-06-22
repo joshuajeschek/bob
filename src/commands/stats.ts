@@ -2,10 +2,11 @@ import messages from '../lib/messages';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
 import { inlineCode } from 'discord.js';
-import { getHero, getHeroes, getPlayerCareerStats, getPlayerSummary } from '../lib/overfast';
+import { PlayerGamemode, getHero, getHeroes, getPlayerCareerStats, getPlayerSummary } from '../lib/overfast';
 import { Stopwatch } from '@sapphire/stopwatch';
+import { capitalizeFirstLetter } from '../lib/util';
 import type { EmbedFooterOptions } from '@discordjs/builders';
-import type { HeroKeyCareerFilter, ResponseError } from '../lib/overfast';
+import type { HeroKeyCareerFilter, ResponseError, SummaryCompetitive } from '../lib/overfast';
 
 const TANK_HEROS = getHeroes('tank').then((heroes) => heroes.map((hero) => ({ name: hero.name, value: hero.key })));
 const DAMAGE_HEROS = getHeroes('damage').then((heroes) => heroes.map((hero) => ({ name: hero.name, value: hero.key })));
@@ -21,8 +22,8 @@ export class ProfileCommand extends Command {
 		await interaction.deferReply();
 		let discordUser = interaction.options.getUser('user');
 		let battleTag = interaction.options.getString('battletag');
-		const platform = (interaction.options.getString('platform') || 'pc') as 'pc' | 'console';
-		const gamemode = (interaction.options.getString('gamemode') || 'competitive') as 'quickplay' | 'competitive';
+		const platform = (interaction.options.getString('platform') || 'pc') as keyof SummaryCompetitive;
+		const gamemode = (interaction.options.getString('gamemode') || 'quickplay') as PlayerGamemode;
 		const heroKey = (interaction.options.getString('tank') ||
 			interaction.options.getString('damage') ||
 			interaction.options.getString('support') ||
@@ -78,6 +79,16 @@ export class ProfileCommand extends Command {
 		const tank_heros = await TANK_HEROS;
 		const damage_heros = await DAMAGE_HEROS;
 		const support_heros = await SUPPORT_HEROS;
+		const platforms: { name: string; value: keyof SummaryCompetitive }[] = [
+			{
+				name: 'PC',
+				value: 'pc'
+			},
+			{
+				name: 'Console',
+				value: 'console'
+			}
+		];
 		registry.registerChatInputCommand(
 			async (builder) =>
 				builder //
@@ -97,31 +108,13 @@ export class ProfileCommand extends Command {
 						option //
 							.setName('platform')
 							.setDescription('The platform to get the stats of (default: PC)')
-							.setChoices(
-								{
-									name: 'PC',
-									value: 'pc'
-								},
-								{
-									name: 'Console',
-									value: 'console'
-								}
-							)
+							.setChoices(...platforms)
 					)
 					.addStringOption((option) =>
 						option //
 							.setName('gamemode')
-							.setDescription('The gamemode to get the stats of (default: Competitive)')
-							.setChoices(
-								{
-									name: 'Competitive',
-									value: 'competitive'
-								},
-								{
-									name: 'Quickplay',
-									value: 'quickplay'
-								}
-							)
+							.setDescription('The gamemode to get the stats of (default: Quickplay)')
+							.setChoices(...Object.values(PlayerGamemode).map((gamemode) => ({ name: gamemode, value: capitalizeFirstLetter(gamemode) })))
 					)
 					.addStringOption((option) =>
 						option //
