@@ -12,7 +12,16 @@ interface CustomHeroCareerStats extends Omit<HeroCareerStats, 'category'> {
 	category: CustomCareerStatCategory;
 }
 
-const CATEGORY_ORDER: CustomCareerStatCategory[] = ['hero_specific', 'game', 'assists', 'average', 'combat'];
+const CATEGORY_ORDER: CustomCareerStatCategory[] = [
+	'hero_specific',
+	'basic',
+	'average',
+	'combat',
+	'match_awards',
+	'miscellaneous',
+	'game',
+	'assists'
+];
 const MINUTE_STATS = ['time_played', 'objective_time'];
 const SECONDS_STATS = ['time_spent_on_fire_avg_per_10_min', 'objective_time_avg_per_10_min'];
 
