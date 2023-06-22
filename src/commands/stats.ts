@@ -19,7 +19,7 @@ const SUPPORT_HEROS = getHeroes('support').then((heroes) => heroes.map((hero) =>
 export class ProfileCommand extends Command {
 	public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
 		const stopwatch = new Stopwatch();
-		await interaction.deferReply();
+		let reply: Promise<any> = interaction.deferReply();
 		let discordUser = interaction.options.getUser('user');
 		let battleTag = interaction.options.getString('battletag');
 		const platform = (interaction.options.getString('platform') || 'pc') as keyof SummaryCompetitive;
@@ -48,6 +48,8 @@ export class ProfileCommand extends Command {
 			battleTag = user.battleTag;
 		}
 
+		reply = (async () => (await reply) && interaction.editReply('Fetching the stats (this might take some seconds)...'))();
+
 		const summary = await getPlayerSummary(battleTag).catch(async (error: ResponseError) => {
 			this.container.logger.error(`Error occured on command 'stats': ${error.response.statusText}`);
 			const embed = await messages.apiError(error);
@@ -72,7 +74,8 @@ export class ProfileCommand extends Command {
 		footer.text = `took ${stopwatch}`;
 		embed.setFooter(footer);
 
-		return interaction.editReply({ embeds: [embed] });
+		await reply;
+		return interaction.editReply({ content: null, embeds: [embed] });
 	}
 
 	public override async registerApplicationCommands(registry: Command.Registry) {

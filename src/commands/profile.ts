@@ -14,7 +14,7 @@ import type { ResponseError } from '../lib/overfast/api';
 export class ProfileCommand extends Command {
 	public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
 		const stopwatch = new Stopwatch();
-		await interaction.deferReply();
+		let reply: Promise<any> = interaction.deferReply();
 		let discordUser = interaction.options.getUser('user');
 		let battleTag = interaction.options.getString('battletag');
 		const platform = (interaction.options.getString('platform') || 'pc') as 'pc' | 'console';
@@ -36,6 +36,8 @@ export class ProfileCommand extends Command {
 			battleTag = user.battleTag;
 		}
 
+		reply = (async () => (await reply) && interaction.editReply('Fetching the profile (this might take some seconds)...'))();
+
 		const profile = await getPlayerSummary(battleTag).catch(async (error: ResponseError) => {
 			this.container.logger.error(`Error occured on command 'profile': ${error.response.statusText}`);
 			const embed = await messages.apiError(error);
@@ -55,7 +57,8 @@ export class ProfileCommand extends Command {
 		footer.text = `took ${stopwatch}`;
 		embed.setFooter(footer);
 
-		return interaction.editReply({ embeds: [embed] });
+		await reply;
+		return interaction.editReply({ content: null, embeds: [embed] });
 	}
 
 	public override registerApplicationCommands(registry: Command.Registry) {
