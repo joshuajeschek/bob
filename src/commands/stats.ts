@@ -115,14 +115,14 @@ export class ProfileCommand extends Command {
 					.addStringOption((option) =>
 						option //
 							.setName('platform')
-							.setDescription('The platform to get the stats of (default: PC)')
+							.setDescription('The platform to get the stats of (default: PC, only affects rank information)')
 							.setChoices(...platforms)
 					)
 					.addStringOption((option) =>
 						option //
 							.setName('gamemode')
 							.setDescription('The gamemode to get the stats of (default: Quickplay)')
-							.setChoices(...Object.values(PlayerGamemode).map((gamemode) => ({ name: gamemode, value: capitalizeFirstLetter(gamemode) })))
+							.setChoices(...Object.values(PlayerGamemode).map((gamemode) => ({ name: capitalizeFirstLetter(gamemode), value: gamemode })))
 					)
 					.addStringOption((option) =>
 						option //

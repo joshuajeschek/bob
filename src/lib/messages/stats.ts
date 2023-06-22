@@ -77,7 +77,7 @@ export default async function (
 
 	return new EmbedBuilder() //
 		.setTitle(summary.username)
-		.setThumbnail((await hero)?.portrait || null)
+		.setThumbnail((await hero)?.portrait || summary.avatar || null)
 		.setColor((await accentColor) || null)
 		.setFields(...fields)
 		.setImage(await image)
