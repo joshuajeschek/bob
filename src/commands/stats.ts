@@ -50,6 +50,11 @@ export class ProfileCommand extends Command {
 			battleTag = user.battleTag;
 		}
 
+		if (!battleTag) {
+			await reply;
+			return interaction.editReply({ content: 'You must provide a battletag or link your account with the link command.' });
+		}
+
 		reply = (await reply) && interaction.editReply('Fetching the stats (this might take some seconds)...');
 
 		const summary = await getPlayerSummary(battleTag).catch(async (error: ResponseError) => {
