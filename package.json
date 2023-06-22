@@ -55,6 +55,7 @@
 		"tunnel": "cloudflared access tcp --hostname postgres.jeschek.eu --url localhost:5432",
 		"prisma": "yarn prisma:dev",
 		"prisma:dev": "dotenv -e .env.development -- npx prisma",
+		"prisma:prod": "dotenv -e .env.production -- npx prisma",
 		"prepare": "husky install",
 		"clean": "rm dist tsconfig.tsbuildinfo -r",
 		"overfast": "./scripts/overfast.sh"
