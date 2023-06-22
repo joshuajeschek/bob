@@ -37,6 +37,7 @@ export class ProfileCommand extends Command {
 			}
 			battleTag = user.battleTag;
 		}
+
 		if (!battleTag) {
 			await reply;
 			return interaction.editReply({ content: 'You must provide a battletag or link your account with the link command.' });
