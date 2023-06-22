@@ -16,7 +16,7 @@ export class DoSomethingCommand extends Command {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description),
-			{ idHints: ['1118124940323987536'] }
+			{ idHints: ['1118124940323987536', '1121474697092157591'] }
 		);
 	}
 }

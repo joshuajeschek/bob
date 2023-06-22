@@ -41,29 +41,34 @@ export class ProfileCommand extends Command {
 		}
 
 		if (!battleTag) {
+			reply = (await reply) && interaction.editReply('Looking for a matching Battle.net account (this might take a seconds)...');
 			const user = await this.container.db.user.findUnique({ where: { id: discordUser.id } });
 			if (!user || !user.battleTag) {
+				await reply;
 				return interaction.editReply({ content: `You must provide a battletag or link your account with the ${inlineCode('/connect')} command.` });
 			}
 			battleTag = user.battleTag;
 		}
 
-		reply = (async () => (await reply) && interaction.editReply('Fetching the stats (this might take some seconds)...'))();
+		reply = (await reply) && interaction.editReply('Fetching the stats (this might take some seconds)...');
 
 		const summary = await getPlayerSummary(battleTag).catch(async (error: ResponseError) => {
 			this.container.logger.error(`Error occured on command 'stats': ${error.response.statusText}`);
 			const embed = await messages.apiError(error);
+			await reply;
 			await interaction.editReply({ embeds: [embed] });
 		});
 		if (!summary) return;
 		const stats = await getPlayerCareerStats(battleTag, gamemode, heroKey).catch(async (error: ResponseError) => {
 			this.container.logger.error(`Error occured on command 'stats': ${error.response.statusText}`);
 			const embed = await messages.apiError(error);
+			await reply;
 			await interaction.editReply({ embeds: [embed] });
 		});
 		if (!stats) return;
 
 		if (summary.privacy === 'private') {
+			await reply;
 			return interaction.editReply({
 				content: `${summary.username ? inlineCode(summary.username) : 'That user'} has a private profile. Please ask them to make it public.`
 			});
@@ -138,7 +143,7 @@ export class ProfileCommand extends Command {
 							.setChoices(...support_heros)
 					),
 
-			{ idHints: ['1121086888766357616'] }
+			{ idHints: ['1121086888766357616', '1121474783696130050'] }
 		);
 	}
 }

@@ -78,7 +78,7 @@ export class DisconnectCommand extends Command {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description),
-			{ idHints: ['1118554526249668699'] }
+			{ idHints: ['1118554526249668699', '1121474699176726609'] }
 		);
 	}
 }

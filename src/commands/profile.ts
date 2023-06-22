@@ -29,24 +29,28 @@ export class ProfileCommand extends Command {
 		}
 
 		if (!battleTag) {
+			reply = (await reply) && interaction.editReply('Looking for your Battle.net account (this might take a seconds)...');
 			const user = await this.container.db.user.findUnique({ where: { id: discordUser.id } });
 			if (!user || !user.battleTag) {
+				await reply;
 				return interaction.editReply({ content: 'You must provide a battletag or link your account with the link command.' });
 			}
 			battleTag = user.battleTag;
 		}
 
-		reply = (async () => (await reply) && interaction.editReply('Fetching the profile (this might take some seconds)...'))();
+		reply = (await reply) && interaction.editReply('Fetching the stats (this might take some seconds)...');
 
 		const profile = await getPlayerSummary(battleTag).catch(async (error: ResponseError) => {
 			this.container.logger.error(`Error occured on command 'profile': ${error.response.statusText}`);
 			const embed = await messages.apiError(error);
+			await reply;
 			await interaction.editReply({ embeds: [embed] });
 		});
 
 		if (!profile) return;
 
 		if (profile.privacy === 'private') {
+			await reply;
 			return interaction.editReply({
 				content: `${profile.username ? inlineCode(profile.username) : 'That user'} has a private profile. Please ask them to make it public.`
 			});
@@ -92,7 +96,7 @@ export class ProfileCommand extends Command {
 								}
 							)
 					),
-			{ idHints: ['1118556730524188712'] }
+			{ idHints: ['1118556730524188712', '1121474705967300638'] }
 		);
 	}
 }

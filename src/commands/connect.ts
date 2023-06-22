@@ -126,7 +126,7 @@ export class ConnectCommand extends Command {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description),
-			{ idHints: ['1118174634945294437'] }
+			{ idHints: ['1118174634945294437', '1121474701844291716'] }
 		);
 	}
 }
