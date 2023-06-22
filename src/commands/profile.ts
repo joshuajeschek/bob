@@ -15,53 +15,47 @@ export class ProfileCommand extends Command {
 	public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
 		const stopwatch = new Stopwatch();
 		await interaction.deferReply();
-		try {
-			let discordUser = interaction.options.getUser('user');
-			let battleTag = interaction.options.getString('battletag');
-			const platform = (interaction.options.getString('platform') || 'pc') as 'pc' | 'console';
-			const footer: EmbedFooterOptions = { text: '🎮', iconURL: this.container.client.user?.displayAvatarURL() };
+		let discordUser = interaction.options.getUser('user');
+		let battleTag = interaction.options.getString('battletag');
+		const platform = (interaction.options.getString('platform') || 'pc') as 'pc' | 'console';
+		const footer: EmbedFooterOptions = { text: '🎮', iconURL: this.container.client.user?.displayAvatarURL() };
 
-			if (discordUser && battleTag) {
-				footer.text = `btw, you only need to provide one of the options ${inlineCode('user')} and ${inlineCode('battletag')}.`;
-			}
-
-			if (!discordUser) {
-				discordUser = interaction.user;
-			}
-
-			if (!battleTag) {
-				const user = await this.container.db.user.findUnique({ where: { id: discordUser.id } });
-				if (!user || !user.battleTag) {
-					return interaction.editReply({ content: 'You must provide a battletag or link your account with the link command.' });
-				}
-				battleTag = user.battleTag;
-			}
-
-			const profile = await getPlayerSummary(battleTag).catch(async (error: ResponseError) => {
-				this.container.logger.error(`Error occured on command 'profile': ${error.response.statusText}`);
-				const embed = await messages.apiError(error);
-				await interaction.editReply({ embeds: [embed] });
-			});
-
-			if (!profile) return;
-
-			if (profile.privacy === 'private') {
-				return interaction.editReply({
-					content: `${profile.username ? inlineCode(profile.username) : 'That user'} has a private profile. Please ask them to make it public.`
-				});
-			}
-
-			const embed = await messages.profile(profile, platform);
-
-			footer.text = `took ${stopwatch}`;
-			embed.setFooter(footer);
-
-			return interaction.editReply({ embeds: [embed] });
-		} catch (error) {
-			this.container.logger.error(`Error occured on command 'profile': ${error}`);
-			const [embed, component] = messages.error();
-			return interaction.editReply({ embeds: [embed], components: [component] });
+		if (discordUser && battleTag) {
+			footer.text = `btw, you only need to provide one of the options ${inlineCode('user')} and ${inlineCode('battletag')}.`;
 		}
+
+		if (!discordUser) {
+			discordUser = interaction.user;
+		}
+
+		if (!battleTag) {
+			const user = await this.container.db.user.findUnique({ where: { id: discordUser.id } });
+			if (!user || !user.battleTag) {
+				return interaction.editReply({ content: 'You must provide a battletag or link your account with the link command.' });
+			}
+			battleTag = user.battleTag;
+		}
+
+		const profile = await getPlayerSummary(battleTag).catch(async (error: ResponseError) => {
+			this.container.logger.error(`Error occured on command 'profile': ${error.response.statusText}`);
+			const embed = await messages.apiError(error);
+			await interaction.editReply({ embeds: [embed] });
+		});
+
+		if (!profile) return;
+
+		if (profile.privacy === 'private') {
+			return interaction.editReply({
+				content: `${profile.username ? inlineCode(profile.username) : 'That user'} has a private profile. Please ask them to make it public.`
+			});
+		}
+
+		const embed = await messages.profile(profile, platform);
+
+		footer.text = `took ${stopwatch}`;
+		embed.setFooter(footer);
+
+		return interaction.editReply({ embeds: [embed] });
 	}
 
 	public override registerApplicationCommands(registry: Command.Registry) {

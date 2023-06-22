@@ -1,6 +1,7 @@
 import sharp from 'sharp';
 import type { PlayerSummary, SummaryCompetitivePlatform, SummaryCompetitiveRoleRank, SummaryCompetitiveRoleRankFull } from '../overfast';
 import { getImage, getImageWithShadow, getURL } from './util';
+import memoizee from 'memoizee';
 
 const BADGE_SIZE = 200;
 const ROLE_ICON_SIZE = 150;
@@ -8,7 +9,8 @@ const RANK_ICON_SIZE = 180;
 const CARD_WIDTH = 1273;
 const CARD_HEIGHT = 255;
 
-export async function ranks(summary: PlayerSummary, platform: 'pc' | 'console') {
+export default memoizee(ranks, { promise: true });
+async function ranks(summary: PlayerSummary, platform: 'pc' | 'console') {
 	let namecard;
 	if (summary?.namecard) {
 		namecard = getImage(summary.namecard);
@@ -24,6 +26,8 @@ export async function ranks(summary: PlayerSummary, platform: 'pc' | 'console') 
 			.png()
 			.toBuffer();
 	}
+
+	let avatar = summary?.avatar ? getImage(summary.avatar) : null;
 
 	const badges = [getImageWithShadow(getImage(summary.endorsement.frame), BADGE_SIZE, BADGE_SIZE, 0.9)];
 
@@ -57,8 +61,21 @@ export async function ranks(summary: PlayerSummary, platform: 'pc' | 'console') 
 		badges.push(...rankBadges);
 	}
 
-	const left = Math.round(1273 / badges.length);
-	const offset = (left - BADGE_SIZE) / 2;
+	avatar = avatar
+		? sharp(await avatar)
+				.resize(CARD_HEIGHT, CARD_HEIGHT)
+				.png()
+				.toBuffer()
+		: null;
+
+	if (avatar) {
+		namecard = sharp(await namecard)
+			.composite([{ input: await avatar, top: 0, left: 0 }])
+			.toBuffer();
+	}
+
+	const left = Math.round((CARD_WIDTH - (avatar ? CARD_HEIGHT : 0)) / badges.length);
+	const offset = (avatar ? CARD_HEIGHT : 0) + (left - BADGE_SIZE) / 2;
 	const top = Math.round((CARD_HEIGHT - BADGE_SIZE) / 2);
 	const wip = sharp(await namecard) //
 		.composite((await Promise.all(badges)).map((badge, index) => ({ input: badge, left: Math.round(offset + left * index), top })));

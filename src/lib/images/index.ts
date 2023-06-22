@@ -1,4 +1,4 @@
-import { ranks } from './ranks';
+import ranks from './ranks';
 
 export default {
 	ranks
